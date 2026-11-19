@@ -129,6 +129,11 @@ export function validateProposal(s: SimState, p: Proposal): Validation {
   }
 
   if (tool && def.toolHeld && held !== tool.id) pickUp(tool);
+  // put things down before settling in for the night
+  if (p.action === 'sleep' && held && (!tool || held !== tool.id)) {
+    steps.push({ action: 'put_down', targetId: held, location: posLoc });
+    held = null;
+  }
 
   // where does the action happen?
   if (def.at === 'target' && target) {

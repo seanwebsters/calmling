@@ -619,7 +619,7 @@ export class Simulation {
       case 'plant_seed':
       case 'plant_flower': return `Calmling planted something in the garden.`;
       case 'notice_audience': return 'Calmling waved to the people watching.';
-      default: return `Calmling finished: ${def.label}${target ? ` (${target.name.toLowerCase()})` : ''}.`;
+      default: return `Calmling ${pastTense(def, target)}.`;
     }
   }
 
@@ -954,7 +954,7 @@ function pastTense(def: ActionDef, target: WorldObject | null): string {
   const t = target ? ` the ${target.name.toLowerCase()}` : '';
   const map: Record<string, string> = {
     sleep: 'slept through the night',
-    rest: `sat down to rest`,
+    rest: `sat down to rest${target ? ` in the ${target.name.toLowerCase()}` : ''}`,
     eat_snack: 'had a snack from the pantry',
     eat_apple: 'picked an apple from the tree',
     drink_tea: 'made a cup of tea',
@@ -970,7 +970,7 @@ function pastTense(def: ActionDef, target: WorldObject | null): string {
     watch_sunset: 'watched the sunset',
     explore: 'explored the forest clearing',
     wander: 'wandered around',
-    inspect: `examined${t}`,
+    inspect: `took a closer look at${t}`,
     keep_object: `kept${t}`,
     cuddle: `cuddled${t}`,
     play: `played with${t}`,
