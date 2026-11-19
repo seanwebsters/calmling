@@ -1,0 +1,27 @@
+{
+  "name": "calmling",
+  "private": true,
+  "version": "0.1.0",
+  "description": "CALMLING — one autonomous animated character, one persistent life, shared by everyone watching.",
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "dev": "concurrently -n worker,web -c blue,magenta \"npm run dev -w @calmling/worker\" \"npm run dev -w @calmling/web\"",
+    "dev:worker": "npm run dev -w @calmling/worker",
+    "dev:web": "npm run dev -w @calmling/web",
+    "build": "npm run build -w @calmling/web",
+    "start:worker": "npm run start -w @calmling/worker",
+    "migrate": "npm run migrate -w @calmling/worker",
+    "simulate": "npm run simulate -w @calmling/worker --",
+    "typecheck": "tsc -p packages/core && tsc -p apps/worker && tsc -p apps/web --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test --trace off"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.10.0",
+    "concurrently": "^9.1.0",
+    "typescript": "~5.9.3",
+    "vitest": "^4.0.0"
+  },
+  "engines": { "node": ">=20" }
+}

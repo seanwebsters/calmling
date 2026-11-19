@@ -1,0 +1,25 @@
+{
+  "name": "@calmling/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/main.ts",
+    "start": "tsx src/main.ts",
+    "migrate": "tsx src/migrate-cli.ts",
+    "simulate": "tsx src/simulate-cli.ts"
+  },
+  "dependencies": {
+    "@calmling/core": "*",
+    "@electric-sql/pglite": "^0.3.0",
+    "ioredis": "^5.4.0",
+    "pg": "^8.13.0",
+    "tsx": "^4.19.0",
+    "ws": "^8.18.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.0",
+    "@types/ws": "^8.5.0"
+  }
+}
