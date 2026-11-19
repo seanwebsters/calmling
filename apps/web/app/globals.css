@@ -8,7 +8,7 @@
   --color-ink: #f6f2ff;
   --color-ink-soft: #cdc3e6;
   --color-mist: #9d92ba;
-  --color-calm: #8b72f0;
+  --color-calm: #9a8ad8;
   --color-calm-deep: #d9cfff;
   --color-calm-soft: rgb(139 114 240 / 0.22);
   --color-lavender: #c2b2ff;
@@ -34,7 +34,7 @@ html {
 body {
   font-family: var(--font-sans);
   background:
-    radial-gradient(60rem 40rem at 85% 110%, rgb(236 130 190 / 0.22), transparent 60%),
+    radial-gradient(60rem 40rem at 85% 110%, rgb(220 140 190 / 0.14), transparent 60%),
     radial-gradient(50rem 36rem at 0% 0%, rgb(120 90 220 / 0.28), transparent 60%),
     radial-gradient(40rem 30rem at 100% 10%, rgb(90 70 170 / 0.25), transparent 60%),
     linear-gradient(180deg, #261d3f 0%, #1f1833 55%, #2a1c3a 100%);
@@ -87,6 +87,17 @@ body::before {
 .focus-ring:focus-visible {
   outline: 2px solid var(--color-calm);
   outline-offset: 2px;
+}
+@keyframes calmglow {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgb(159 224 180 / 0.5); }
+  50% { opacity: 0.7; box-shadow: 0 0 10px 2px rgb(159 224 180 / 0.35); }
+}
+.calm-glow {
+  animation: calmglow 5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .calm-glow, .live-dot { animation: none; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
 @keyframes livepulse {
   0%, 100% { opacity: 1; transform: scale(1); }

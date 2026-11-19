@@ -7,9 +7,13 @@ One autonomous animated character living a persistent life on a small island,
 and build things together. They influence the world. They cannot control the
 character.
 
-> The character shown is a **temporary placeholder**. The official Calmlings
-> character and animations plug in through the asset system. See
-> [docs/ASSETS.md](docs/ASSETS.md).
+> The character is the official Calmling artwork (`apps/web/public/assets/calmling/calmling.png`),
+> animated procedurally (breathing, squash, tilt, blinking eyelids). Hand-made
+> animation clips can replace this through the asset system. See [docs/ASSETS.md](docs/ASSETS.md).
+
+**Design rule: everything must be calming.** No urgency, countdowns, flashing, loud
+counters or leaderboards; slow motion; muted colours; quiet sound; chat slow mode;
+Calmling is never distressed. New features should pass that test.
 
 ## Architecture
 
@@ -114,7 +118,8 @@ The first command runs unit, simulation and integration tests (34; one is skippe
 
 **Partially implemented**
 - Authentication is a development login: claim a username, get an HMAC token. Supabase Auth is not integrated.
-- Sprite-sheet animations: the manifest and loading work; swapping the procedural body for sprites per clip is not wired (see docs/ASSETS.md).
+- Character animation uses one official still with procedural motion. Per-clip sprite sheets load from the manifest, but swapping them in for the still is not wired (see docs/ASSETS.md).
+- Ambient soundscape is procedural Web Audio (breeze, rain, crickets, rare birds). Real recorded ambience would sound better.
 - Weekly and monthly recaps: daily entries only so far. Personality summaries appear in admin, not as diary entries.
 - Redis pub/sub is published, but no separate gateway consumes it yet. One worker instance serves WebSockets.
 - Supabase RLS policies are written but have only been tested as SQL syntax, not against a Supabase project.

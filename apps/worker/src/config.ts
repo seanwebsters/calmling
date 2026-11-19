@@ -17,6 +17,7 @@ export interface Config {
   corsOrigins: string[];
   openai: { apiKey: string | null; model: string; diaryModel: string; baseUrl: string; maxCallsPerHour: number; dailyBudgetUsd: number; inputPricePerM: number; outputPricePerM: number; timeoutMs: number; minIntervalSec: number };
   chatObserveEverySec: number;
+  chatSlowModeSec: number;
   pollDurationHours: number;
 }
 
@@ -45,6 +46,7 @@ export function loadConfig(overrides: Partial<Config> = {}): Config {
       minIntervalSec: num(env.LLM_MIN_INTERVAL_SEC, 20),
     },
     chatObserveEverySec: num(env.CHAT_OBSERVE_EVERY_SEC, 45),
+    chatSlowModeSec: num(env.CHAT_SLOW_MODE_SEC, 10),
     pollDurationHours: num(env.POLL_DURATION_HOURS, 24),
     ...overrides,
   };

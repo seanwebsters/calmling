@@ -2,7 +2,7 @@
 
 import { ACTIONS, LOCATIONS, NEED_KEYS, locationAt, type ChatMessageDTO, type SimEvent } from '@calmling/core';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BookOpen, Brain, Cloud, CloudRain, Eye, Flag, Gift, Heart, Maximize, MessageCircle, Moon, Send, Sparkles, Sprout, Sun, Target, VolumeX, Wind } from 'lucide-react';
+import { BookOpen, Brain, Cloud, CloudRain, Flag, Gift, Heart, Maximize, MessageCircle, Moon, Send, Sparkles, Sprout, Sun, Target, VolumeX, Wind } from 'lucide-react';
 import { Avatar } from './Nav';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -80,16 +80,16 @@ export function StatusOverlay({ stageRef }: { stageRef?: React.RefObject<HTMLDiv
       <div className="pointer-events-none absolute inset-x-3 top-3 flex flex-wrap items-start justify-between gap-2 sm:inset-x-5 sm:top-5" data-testid="status-overlay">
         <div className="flex items-center gap-2">
           {conn === 'live' ? (
-            <span className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-[#ef4b5f] px-3.5 py-1.5 text-sm font-bold tracking-wide text-white shadow-lg">
-              <span className="live-dot size-2 rounded-full bg-white/90" /> LIVE
+            <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-black/25 px-3.5 py-1.5 text-sm font-semibold tracking-wide text-white backdrop-blur-md">
+              <span className="calm-glow size-2 rounded-full bg-[#9fe0b4]" /> LIVE
             </span>
           ) : (
             <button onClick={reconnectNow} className="pointer-events-auto chip rounded-full px-3 py-1.5 text-sm font-semibold">
               {conn === 'offline' ? 'Offline — tap to retry' : 'Reconnecting…'}
             </button>
           )}
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-black/25 px-3 py-1.5 text-sm font-semibold text-white backdrop-blur-md">
-            <Eye size={16} /> {viewers.toLocaleString()} watching
+          <span className={`items-center gap-1.5 rounded-full bg-black/20 px-3 py-1.5 text-sm text-white/85 backdrop-blur-md ${night ? 'hidden' : 'hidden sm:inline-flex'}`}>
+            {viewers > 1 ? `here with ${(viewers - 1).toLocaleString()} other${viewers === 2 ? '' : 's'}` : 'here quietly'}
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
@@ -105,7 +105,7 @@ export function StatusOverlay({ stageRef }: { stageRef?: React.RefObject<HTMLDiv
       </div>
       <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-3 sm:inset-x-5 sm:bottom-5">
         <span className="inline-flex max-w-[85%] items-center gap-2 rounded-full bg-black/35 px-4 py-2 text-[0.95rem] font-semibold text-white backdrop-blur-md" data-testid="current-activity">
-          <span className="size-2.5 shrink-0 rounded-full bg-[#ef4b5f]" />
+          <span className="calm-glow size-2 shrink-0 rounded-full bg-[#c2b2ff]" />
           <span className="truncate">Calmling is {label}{where} · <span className="font-normal capitalize text-white/80">{frame.character.mood}</span></span>
         </span>
         {stageRef && (

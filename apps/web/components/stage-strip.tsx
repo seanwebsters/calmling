@@ -29,16 +29,15 @@ export function StageStrip({ onOpenGifts }: { onOpenGifts: () => void }) {
     } catch (e) {
       setToast(e instanceof Error ? e.message : 'Could not send');
     }
-    setTimeout(() => setToast(null), 5000);
+    setTimeout(() => setToast(null), 9000);
   }
 
   return (
     <div className="relative mt-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_420px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <motion.button
-        whileHover={{ y: -2 }}
-        whileTap={{ scale: 0.98 }}
+        whileTap={{ scale: 0.99 }}
         onClick={onOpenGifts}
-        className="focus-ring flex items-center gap-5 rounded-[1.6rem] border border-white/20 bg-gradient-to-br from-[#9a7cf2] via-[#8a6ae6] to-[#b48aea] px-6 py-5 text-left text-white shadow-[0_18px_40px_-18px_rgb(139_114_240/0.9)]"
+        className="focus-ring flex items-center gap-5 rounded-[1.6rem] border border-white/15 bg-gradient-to-br from-[#7f6fc4]/85 to-[#9a84cf]/75 px-6 py-5 text-left text-white shadow-[0_18px_40px_-24px_rgb(125_107_201/0.8)] transition-colors hover:from-[#8778cb]/90"
       >
         <Gift size={50} strokeWidth={1.6} className="shrink-0" />
         <span className="flex-1">
@@ -54,8 +53,7 @@ export function StageStrip({ onOpenGifts }: { onOpenGifts: () => void }) {
         {QUICK.map((q) => (
           <motion.button
             key={q.kind}
-            whileHover={{ y: -3 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => quick(q.kind, q.label)}
             className="glass focus-ring flex flex-col items-center justify-center gap-1 rounded-[1.4rem] py-3 text-white"
             data-testid={`quick-${q.kind}`}
@@ -79,7 +77,7 @@ export function StageStrip({ onOpenGifts }: { onOpenGifts: () => void }) {
           <span className="mt-1 block pr-16 text-[1.02rem] text-white/90">{goal.title}</span>
           <span className="mt-3 flex items-center gap-3">
             <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-white/15">
-              <motion.span className="block h-full rounded-full bg-gradient-to-r from-[#a58bff] to-[#d7a6ff]" initial={{ width: 0 }} animate={{ width: `${Math.min(100, (goal.progress / goal.target) * 100)}%` }} transition={{ duration: 1 }} />
+              <motion.span className="block h-full rounded-full bg-gradient-to-r from-[#9fd8b4] to-[#c2b2ff]" initial={{ width: 0 }} animate={{ width: `${Math.min(100, (goal.progress / goal.target) * 100)}%` }} transition={{ duration: 1 }} />
             </span>
             <span className="text-sm font-semibold tabular-nums">
               {goal.progress.toLocaleString()} / {goal.target.toLocaleString()}
@@ -91,7 +89,7 @@ export function StageStrip({ onOpenGifts }: { onOpenGifts: () => void }) {
         </Link>
       )}
       {toast && (
-        <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="chip absolute -top-14 left-1/2 z-10 -translate-x-1/2 rounded-full px-4 py-2 text-sm font-medium shadow-lg">
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.2 }} className="col-span-full text-center text-sm text-white/70">
           {toast}
         </motion.p>
       )}

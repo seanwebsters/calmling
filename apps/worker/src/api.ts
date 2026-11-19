@@ -240,7 +240,8 @@ export function buildApi({ rt, limiter, broadcastChat, broadcastChatUpdate, view
     const m = moderateMessage(text);
     await limit(`chat:attempts:${u.id}`, 30, 60);
     if (!m.ok) throw new HttpError(400, m.reason ?? 'blocked');
-    await limit(`chat:burst:${u.id}`, 1, 2);
+    // slow mode keeps the room calm
+    await limit(`chat:slow:${u.id}`, 1, cfg.chatSlowModeSec);
     await limit(`chat:min:${u.id}`, 12, 60);
     // duplicate-message spam
     const dup = await db.query("select 1 from chat_messages where user_id = $1 and text = $2 and created_at > now() - interval '2 minutes'", [u.id, m.text]);

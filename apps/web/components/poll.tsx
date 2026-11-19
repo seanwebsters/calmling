@@ -2,22 +2,22 @@
 
 import { motion } from 'framer-motion';
 import { Check, Vote } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { api } from '@/lib/api';
 import { requireSignIn } from './auth';
 import { Card, Pill } from './ui';
 
 export interface Poll { id: string; question: string; status: string; closes_at: string; winning_option_id: string | null; options: { id: string; label: string; votes: number; emoji: string }[]; myVote: string | null }
 
+/** Gentle, non-ticking description of when a poll closes. */
 export function Countdown({ to }: { to: string }) {
-  const [now, setNow] = useState(Date.now());
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, []);
-  const ms = Math.max(0, new Date(to).getTime() - now);
-  const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000), s = Math.floor((ms % 60000) / 1000);
-  return <span className="tabular-nums">{h}h {m}m {s}s</span>;
+  const d = new Date(to);
+  const hours = (d.getTime() - Date.now()) / 3600000;
+  const h = d.getHours();
+  const part = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+  const sameDay = d.toDateString() === new Date().toDateString();
+  const text = hours <= 0 ? 'soon' : hours < 1 ? 'within the hour' : sameDay ? `this ${part}` : hours < 48 ? `tomorrow ${part}` : `on ${d.toLocaleDateString([], { weekday: 'long' })}`;
+  return <span>{text}</span>;
 }
 
 export function PollCard({ poll, onVoted }: { poll: Poll; onVoted: () => void }) {
@@ -34,7 +34,7 @@ export function PollCard({ poll, onVoted }: { poll: Poll; onVoted: () => void })
     }
   }
   return (
-    <Card title={poll.question} icon={<Vote size={17} />} action={open ? <Pill tone="calm">Closes in <Countdown to={poll.closes_at} /></Pill> : <Pill>Closed</Pill>}>
+    <Card title={poll.question} icon={<Vote size={17} />} action={open ? <Pill tone="calm">Closes <Countdown to={poll.closes_at} /></Pill> : <Pill>Closed</Pill>}>
       <div className="space-y-2" data-testid="poll">
         {poll.options.map((o) => {
           const pct = total ? (o.votes / total) * 100 : 0;

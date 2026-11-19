@@ -46,8 +46,8 @@ export function Nav() {
           {LINKS.map((l) => {
             const active = l.href === '/' ? path === '/' : path.startsWith(l.href);
             return (
-              <Link key={l.href} href={l.href} className={`focus-ring flex items-center gap-2 rounded-full px-5 py-2 text-[0.98rem] font-semibold transition-colors ${active ? 'bg-gradient-to-r from-[#8b72f0] to-[#a57cf0] text-white shadow-[0_8px_24px_-10px_rgb(139_114_240/0.9)]' : 'text-white/85 hover:text-white'}`}>
-                {l.href === '/' && <span className={`size-2 rounded-full ${active ? 'live-dot bg-[#ff5a6e]' : 'bg-[#ff5a6e]/80'}`} />}
+              <Link key={l.href} href={l.href} className={`focus-ring flex items-center gap-2 rounded-full px-5 py-2 text-[0.98rem] font-semibold transition-colors ${active ? 'bg-white/14 text-white ring-1 ring-white/15' : 'text-white/85 hover:text-white'}`}>
+                {l.href === '/' && <span className={`size-2 rounded-full bg-[#9fe0b4] ${active ? 'calm-glow' : 'opacity-70'}`} />}
                 {l.label}
               </Link>
             );
@@ -65,7 +65,7 @@ export function Nav() {
           )}
           <Link href="/highlights" onClick={() => setSeen(notable.length)} className="focus-ring relative grid size-10 place-items-center rounded-full bg-white/10 text-white hover:bg-white/15" aria-label="Highlights">
             <Bell size={18} />
-            {unread && <span className="absolute right-2 top-2 size-2 rounded-full bg-white ring-2 ring-[#ff5a6e]" />}
+            {unread && <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-[#c2b2ff]/80" />}
           </Link>
           {user ? (
             <div className="flex items-center gap-1">
@@ -88,7 +88,7 @@ export function Nav() {
         {[...LINKS, { href: '/highlights', label: 'Highlights' }, { href: '/about', label: 'About' }].map((l) => {
           const active = l.href === '/' ? path === '/' : path.startsWith(l.href);
           return (
-            <Link key={l.href} href={l.href} className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-semibold ${active ? 'bg-[#8b72f0] text-white' : 'text-white/75'}`}>
+            <Link key={l.href} href={l.href} className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-semibold ${active ? 'bg-white/14 text-white' : 'text-white/75'}`}>
               {l.label}
             </Link>
           );

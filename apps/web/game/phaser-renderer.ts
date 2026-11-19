@@ -111,6 +111,7 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
         this.load.spritesheet(`char_${id}`, a.url, { frameWidth: a.frameWidth, frameHeight: a.frameHeight });
       }
       for (const [kind, a] of Object.entries(manifest.objects)) this.load.image(`obj_${kind}`, a.url);
+      if (manifest.character.image) this.load.image('char_image', manifest.character.image.url);
     }
 
     create() {
@@ -134,7 +135,7 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
       this.nightOverlay = this.add.rectangle(0, 0, W, H, 0x0b1430, 0).setOrigin(0).setScrollFactor(0).setDepth(50);
       this.glows = this.add.graphics().setDepth(51).setBlendMode(Phaser.BlendModes.ADD);
       this.rain = this.add.graphics().setScrollFactor(0).setDepth(52);
-      for (let i = 0; i < 140; i++) this.rainDrops.push({ x: Math.random() * W, y: Math.random() * H, v: 500 + Math.random() * 300 });
+      for (let i = 0; i < 90; i++) this.rainDrops.push({ x: Math.random() * W, y: Math.random() * H, v: 260 + Math.random() * 140 });
       if (manifest.character.placeholder) {
         this.add
           .text(W / 2, H - 96, manifest.character.label, { fontFamily: 'DM Sans, sans-serif', fontSize: '15px', color: '#5d6574', backgroundColor: 'rgba(255,253,248,0.82)', padding: { x: 8, y: 4 } })
@@ -310,6 +311,29 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
       c.add([shadow, feetL, feetR, body, this.prop]);
       this.char = c;
       this.parts = { shadow, feetL, feetR, body, torso, armL, armR, eyes, closedEyes, mouth };
+      // official character art: one still, animated with gentle transforms and drawn eyelids
+      const img = manifest.character.image;
+      if (img && this.textures.exists('char_image')) {
+        for (const g of [torso, belly, armL, armR, eyes, blushL, blushR, mouth, closedEyes, feetL, feetR]) (g as any).setVisible(false);
+        const k = img.displayHeight / img.height;
+        const sprite = this.add.image(0, 2, 'char_image').setOrigin(0.5, 1).setScale(k);
+        const lidColor = parseInt(img.lidColor.slice(1), 16);
+        const lids = img.eyes.map((e) => {
+          const cx = (e.x - img.width / 2) * k;
+          const cy = (e.y - img.height) * k + 2;
+          const lid = this.add.ellipse(cx, cy - e.ry * k, e.rx * 2 * k * 1.08, e.ry * 2 * k * 1.1, lidColor).setOrigin(0.5, 0).setScale(1, 0);
+          const lash = this.add.graphics();
+          lash.lineStyle(2.2, 0x1d3f66, 0.9);
+          lash.beginPath();
+          lash.arc(cx, cy - 2, e.rx * k * 0.75, 0.25, Math.PI - 0.25);
+          lash.strokePath();
+          lash.setVisible(false);
+          return { lid, lash };
+        });
+        body.add([sprite, ...lids.flatMap((l) => [l.lid, l.lash])]);
+        this.parts.image = { sprite, lids };
+        shadow.setSize(96, 16);
+      }
       this.zzz = this.add.text(0, 0, 'z z z', { fontFamily: 'Fraunces, serif', fontSize: '26px', color: '#5b8db8' }).setDepth(12).setVisible(false);
       const bubbleBg = this.add.graphics();
       this.bubbleText = this.add.text(0, 0, '', { fontFamily: 'DM Sans, sans-serif', fontSize: '18px', color: '#2e3644', align: 'center', wordWrap: { width: 260 } }).setOrigin(0.5);
@@ -364,7 +388,7 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
       p.feetR.setPosition(18, -4);
       p.shadow.setScale(1);
       this.prop.setPosition(0, 0).setRotation(0);
-      const breathe = Math.sin(t / 520) * 0.018;
+      const breathe = Math.sin(t / 900) * 0.02;
       let squash = 1 + breathe;
       let bubble: string | null = null;
       let prop: string | null = null;
@@ -385,8 +409,8 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
       switch (anim) {
         case 'walking':
         case 'carrying': {
-          const ph = t / 110;
-          body.y = -Math.abs(Math.sin(ph)) * 7;
+          const ph = t / 150;
+          body.y = -Math.abs(Math.sin(ph)) * 4;
           body.rotation = Math.sin(ph) * 0.04;
           p.feetL.y = -4 - Math.max(0, Math.sin(ph)) * 8;
           p.feetR.y = -4 - Math.max(0, -Math.sin(ph)) * 8;
@@ -469,9 +493,9 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
           break;
         }
         case 'dancing': {
-          const ph = t / 160;
-          body.y = -Math.abs(Math.sin(ph)) * 22;
-          body.rotation = Math.sin(ph / 2) * 0.25;
+          const ph = t / 320;
+          body.y = -Math.abs(Math.sin(ph)) * 8;
+          body.rotation = Math.sin(ph / 2) * 0.12;
           p.armL.setPosition(-46, -80).setRotation(-2.2 + Math.sin(ph) * 0.4);
           p.armR.setPosition(46, -80).setRotation(2.2 - Math.sin(ph) * 0.4);
           p.shadow.setScale(1 - Math.abs(Math.sin(ph)) * 0.25);
@@ -489,14 +513,14 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
           p.eyes.setScale(1.15, t < this.blinkUntil ? 0.12 : 1.15);
           break;
         case 'react_surprised':
-          body.y = -Math.abs(Math.sin(t / 120)) * 16;
-          bubble = '!';
+          body.y = -Math.abs(Math.sin(t / 260)) * 6;
+          bubble = '✦';
           p.armL.setPosition(-48, -72).setRotation(-1.2);
           p.armR.setPosition(48, -72).setRotation(1.2);
           break;
         case 'react_happy':
-          body.y = -Math.abs(Math.sin(t / 140)) * 12;
-          bubble = '♥';
+          body.y = -Math.abs(Math.sin(t / 300)) * 5;
+          bubble = '♡';
           break;
         case 'stretching':
         case 'waking_up': {
@@ -514,17 +538,18 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
           break;
         case 'playing':
           prop = 'top';
-          body.y = -Math.abs(Math.sin(t / 200)) * 6;
+          body.y = -Math.abs(Math.sin(t / 380)) * 4;
           this.prop.setRotation(0);
           break;
         case 'photographing':
-          prop = (t % 1800) < 120 ? 'camera_flash' : 'camera';
+          prop = 'camera';
           p.armL.setPosition(-20, -64).setRotation(-1);
           p.armR.setPosition(20, -64).setRotation(1);
           break;
         case 'waving': {
-          p.armR.setPosition(46, -82).setRotation(2.4 + Math.sin(t / 110) * 0.5);
-          bubble = '👋';
+          p.armR.setPosition(46, -82).setRotation(2.4 + Math.sin(t / 260) * 0.4);
+          body.rotation = Math.sin(t / 520) * 0.06;
+          bubble = '♡';
           break;
         }
         case 'picking_up':
@@ -538,6 +563,16 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
       if (!sleeping) {
         p.feetL.setVisible(true);
         p.feetR.setVisible(true);
+      }
+      if (p.image) {
+        this.prop.y += 10;
+        // procedural parts stay hidden; blink and sleep with soft eyelids instead
+        for (const g of [p.torso, p.armL, p.armR, p.eyes, p.closedEyes, p.mouth, p.feetL, p.feetR]) g.setVisible(false);
+        const closed = sleeping ? 1 : t < this.blinkUntil ? 1 : anim === 'resting' || anim === 'watching_sunset' ? 0.42 : 0;
+        for (const l of p.image.lids) {
+          l.lid.scaleY += (closed - l.lid.scaleY) * 0.35;
+          l.lash.setVisible(l.lid.scaleY > 0.9);
+        }
       }
       body.scaleY = squash;
       body.scaleX = 2 - squash;
@@ -563,7 +598,7 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
       let px2 = px;
       if (animation.animation === 'sleeping' && target?.kind === 'bed') {
         // lie down on the mattress: the body rotates around the feet
-        px2 = target.x * S + 62;
+        px2 = target.x * S + (p_image(this) ? 80 : 62);
         y = GROUND - 52;
       } else if (['resting', 'reading', 'sitting', 'drinking_tea'].includes(animation.animation) && target && ['armchair', 'bench', 'bed', 'treehouse', 'jetty'].includes(target.kind)) {
         y = GROUND - (target.kind === 'bed' ? 38 : target.kind === 'treehouse' ? 120 : 24);
@@ -593,15 +628,15 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
       // rain
       this.rain.clear();
       if (frame.weather === 'rain') {
-        this.rain.lineStyle(1.6, 0xb5cde4, 0.7);
+        this.rain.lineStyle(1.2, 0xc8d8ea, 0.35);
         for (const d of this.rainDrops) {
           d.y += (d.v * delta) / 1000;
-          d.x -= (80 * delta) / 1000;
+          d.x -= (30 * delta) / 1000;
           if (d.y > H) {
             d.y = -10;
             d.x = Math.random() * W;
           }
-          this.rain.lineBetween(d.x, d.y, d.x - 4, d.y + 14);
+          this.rain.lineBetween(d.x, d.y, d.x - 2, d.y + 10);
         }
       }
     }
@@ -975,4 +1010,8 @@ function drawProp(scene: Scene, g: G, kind: string) {
       break;
   }
   void scene;
+}
+
+function p_image(scene: unknown): boolean {
+  return !!(scene as { parts?: { image?: unknown } }).parts?.image;
 }

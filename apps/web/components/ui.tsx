@@ -26,14 +26,14 @@ export function Pill({ children, tone = 'neutral', className = '' }: { children:
     calm: 'bg-calm-soft text-calm-deep',
     lavender: 'bg-lavender-soft text-lavender',
     moss: 'bg-moss-soft text-moss',
-    live: 'bg-[#ef4b5f] text-white',
+    live: 'bg-black/25 text-white',
   };
   return <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${tones[tone]} ${className}`}>{children}</span>;
 }
 
 export function Button({ children, onClick, disabled, variant = 'primary', type = 'button', className = '', ...rest }: { children: ReactNode; onClick?: () => void; disabled?: boolean; variant?: 'primary' | 'soft' | 'ghost'; type?: 'button' | 'submit'; className?: string; 'data-testid'?: string }) {
   const v = {
-    primary: 'bg-gradient-to-r from-[#8b72f0] to-[#b07ae8] text-white hover:brightness-110 shadow-[0_8px_22px_-10px_rgb(139_114_240/0.9)]',
+    primary: 'bg-[#7d6bc9] text-white hover:bg-[#8a79d2] shadow-[0_6px_18px_-12px_rgb(125_107_201/0.8)]',
     soft: 'bg-calm-soft text-calm-deep hover:bg-calm-soft/80',
     ghost: 'text-ink-soft hover:bg-cream-2',
   };

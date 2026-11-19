@@ -4,7 +4,7 @@ export default function AboutPage() {
   return (
     <main className="mx-auto max-w-[900px] px-4 py-10 sm:px-6">
       <PageHeader eyebrow="About" title="One Calmling. One life. The whole world watching.">
-        Calmling is an experiment in shared, persistent, autonomous character simulation.
+        A calm place to be. Calmling lives slowly, on its own terms, and you're welcome to keep it company.
       </PageHeader>
       <div className="space-y-5 text-[1.02rem] leading-relaxed text-ink-soft">
         <Card title="What you are watching">
@@ -18,7 +18,7 @@ export default function AboutPage() {
         </Card>
         <Card title="Honest notes">
           <ul className="list-disc space-y-1.5 pl-5">
-            <li>The character shown is a <strong>temporary placeholder</strong>. The official Calmlings character and animations will replace it through the asset system.</li>
+            <li>Calmling is animated from a single piece of official artwork, with gentle procedural motion (breathing, blinking, tilting). Full hand-made animation clips can replace this through the asset system.</li>
             <li>The live view is the shared simulation rendered in your browser in real time — it is not an encoded video stream.</li>
             <li>Needs, moods and “feelings” are simulated values, not real experiences.</li>
             <li>Diary entries are narrative interpretations written from verified events; the events are listed under each entry.</li>

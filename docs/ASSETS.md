@@ -1,7 +1,10 @@
 # Replacing the placeholder with official Calmlings assets
 
-The character on screen is a **temporary procedural placeholder** (a soft round
-figure drawn in code). It is labelled in the scene. The simulation never
+The character is the official Calmling still (`public/assets/calmling/calmling.png`,
+background removed). `manifest.json → character.image` gives its size, eye
+positions (for drawn blinking eyelids) and eyelid colour. The renderer animates
+the still with breathing, squash, tilt and bob. If `image` is removed, it falls
+back to the procedural placeholder. The simulation never
 references any visual asset, so official art can be dropped in without
 touching the simulation, database or API.
 

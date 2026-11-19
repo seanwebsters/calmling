@@ -1,11 +1,23 @@
 {
-  "$comment": "Asset manifest for the Calmling renderer. Replace placeholder entries with official Calmlings assets. See docs/ASSETS.md.",
+  "$comment": "Asset manifest for the Calmling renderer. See docs/ASSETS.md.",
   "version": 1,
   "character": {
-    "placeholder": true,
-    "label": "Temporary placeholder character — official Calmlings assets pending",
+    "placeholder": false,
+    "label": "",
     "scale": 1,
     "anchor": { "x": 0.5, "y": 1 },
+    "image": {
+      "url": "/assets/calmling/calmling.png",
+      "width": 550,
+      "height": 640,
+      "displayHeight": 118,
+      "furColor": "#4aa0d6",
+      "lidColor": "#3f93cd",
+      "eyes": [
+        { "x": 207, "y": 232, "rx": 74, "ry": 64 },
+        { "x": 357, "y": 228, "rx": 74, "ry": 64 }
+      ]
+    },
     "animations": {}
   },
   "objects": {},

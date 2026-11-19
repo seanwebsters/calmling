@@ -1,7 +1,10 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { Leaf, MessageCircle, Volume2, VolumeX } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Soundscape } from '@/lib/soundscape';
+import { useLive } from '@/lib/live';
 import { LiveScene } from '@/components/LiveScene';
 import { ChatPanel, DiaryCard, GiftPanel, HabitsCard, MemoriesCard, NeedsCard, RecentMoments, StatusOverlay, usePolling, useLiveConnection } from '@/components/live-widgets';
 import { PollCard, type Poll } from '@/components/poll';
@@ -53,6 +56,24 @@ export default function LivePage() {
   useLiveConnection();
   const [tab, setTab] = useState<TabId>('chat');
   const stage = useRef<HTMLDivElement>(null);
+  const [quiet, setQuiet] = useState(false);
+  const [sound, setSound] = useState(false);
+  const sc = useRef<Soundscape | null>(null);
+  const daylight = useLive((s) => s.frame?.daylight ?? 1);
+  const weather = useLive((s) => s.frame?.weather ?? 'clear');
+  useEffect(() => sc.current?.update(daylight, weather), [daylight, weather, sound]);
+  useEffect(() => () => void sc.current?.stop(), []);
+  async function toggleSound() {
+    if (sound) {
+      await sc.current?.stop();
+      setSound(false);
+    } else {
+      sc.current = sc.current ?? new Soundscape();
+      await sc.current.start();
+      sc.current.update(daylight, weather);
+      setSound(true);
+    }
+  }
   const panel = useRef<HTMLDivElement>(null);
   const openGifts = () => {
     setTab('gifts');
@@ -60,17 +81,25 @@ export default function LivePage() {
   };
   return (
     <main className="mx-auto max-w-[1560px] px-3 pb-16 pt-2 sm:px-6">
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
+      <div className={`grid gap-5 ${quiet ? '' : 'lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]'}`}>
         <div ref={stage} className="relative overflow-hidden rounded-[1.8rem] shadow-[0_30px_80px_-30px_rgb(0_0_0/0.8)] ring-1 ring-white/15">
           <LiveScene className="aspect-[4/5] w-full sm:aspect-video" />
           <StatusOverlay stageRef={stage} />
+          <div className="absolute bottom-3 right-16 flex gap-2 sm:bottom-5 sm:right-[4.5rem]">
+            <button onClick={toggleSound} className="grid size-10 place-items-center rounded-full bg-black/30 text-white backdrop-blur-md hover:bg-black/45" aria-label={sound ? 'Turn ambient sound off' : 'Turn ambient sound on'} title="Ambient sound">
+              {sound ? <Volume2 size={18} /> : <VolumeX size={18} />}
+            </button>
+            <button onClick={() => setQuiet(!quiet)} className="grid size-10 place-items-center rounded-full bg-black/30 text-white backdrop-blur-md hover:bg-black/45" aria-label={quiet ? 'Show chat and gifts' : 'Just Calmling'} title={quiet ? 'Show chat and gifts' : 'Just Calmling'} data-testid="quiet-toggle">
+              {quiet ? <MessageCircle size={18} /> : <Leaf size={18} />}
+            </button>
+          </div>
         </div>
-        <div ref={panel} className="h-[70vh] min-h-[420px] lg:h-auto">
+        <div ref={panel} className={`h-[70vh] min-h-[420px] lg:h-auto ${quiet ? 'hidden' : ''}`}>
           <SidePanel tab={tab} setTab={setTab} />
         </div>
       </div>
 
-      <StageStrip onOpenGifts={openGifts} />
+      {!quiet && <StageStrip onOpenGifts={openGifts} />}
 
       <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         <div className="space-y-5">

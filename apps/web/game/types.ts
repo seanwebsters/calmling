@@ -36,6 +36,18 @@ export interface AssetManifest {
     label: string;
     scale: number;
     anchor: { x: number; y: number };
+    /** a single still of the official character; the renderer animates it procedurally (squash, tilt, bob, blinks) */
+    image?: {
+      url: string;
+      width: number;
+      height: number;
+      /** height in scene units before the global character scale */
+      displayHeight: number;
+      furColor: string;
+      lidColor: string;
+      /** eye centres/radii in image pixels, used to draw blinking eyelids */
+      eyes: { x: number; y: number; rx: number; ry: number }[];
+    };
     /** keyed by AnimationId from @calmling/core; missing clips fall back to the procedural placeholder */
     animations: Record<string, SpriteAnimationAsset>;
   };
