@@ -155,7 +155,7 @@ export const ACTIONS: Record<string, ActionDef> = {
   },
   watch_sunset: {
     id: 'watch_sunset', label: 'watch the sunset', habitLabel: 'Watches the sunset', gerund: 'watching the sunset', goal: 'enjoy_the_evening', category: 'rest', animation: 'watching_sunset',
-    at: 'target', targetTags: ['view'], duration: [25, 40], satisfies: { comfort: 15, happiness: 12, curiosity: 4, social: 4 }, traits: { patience: 0.5 },
+    at: 'target', targetTags: ['view'], targetFilter: (o) => !['home', 'bedroom'].includes(o.location), duration: [25, 40], satisfies: { comfort: 15, happiness: 12, curiosity: 4, social: 4 }, traits: { patience: 0.5 },
     phases: ['evening'], outdoor: true, interruptible: true, effect: 'none',
   },
   explore: {

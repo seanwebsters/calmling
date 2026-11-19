@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MomentRow, usePolling } from '@/components/live-widgets';
 import { Card, Empty, PageHeader, Pill } from '@/components/ui';
 import type { SimEvent } from '@calmling/core';
@@ -13,19 +13,22 @@ const TYPE_INFO: Record<string, string> = {
 
 export default function MemoriesPage() {
   const [type, setType] = useState<(typeof TYPES)[number]>('all');
+  const [q, setQ] = useState('');
+  useEffect(() => setQ(new URLSearchParams(window.location.search).get('q') ?? ''), []);
   const { data } = usePolling<{ memories: Mem[] }>(`/api/memories?limit=300${type === 'all' ? '' : `&type=${type}`}`, 30000);
   const { data: ev } = usePolling<{ events: SimEvent[] }>('/api/events?limit=60&minImportance=0.45', 30000);
   const byDay = useMemo(() => {
     const m = new Map<number, Mem[]>();
-    for (const x of data?.memories ?? []) m.set(x.day, [...(m.get(x.day) ?? []), x]);
+    for (const x of (data?.memories ?? []).filter((x) => !q || x.summary.toLowerCase().includes(q.toLowerCase()))) m.set(x.day, [...(m.get(x.day) ?? []), x]);
     return [...m.entries()].sort((a, b) => b[0] - a[0]);
-  }, [data]);
+  }, [data, q]);
   return (
     <main className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6">
       <PageHeader eyebrow="Memory" title="What Calmling remembers">
         Every memory is created from a real simulation event and links back to it. Older small moments are folded into day summaries; important facts are kept.
       </PageHeader>
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="mb-6 flex flex-wrap items-center gap-2">
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search memories…" className="mr-2 w-56 rounded-full border border-line bg-cream-2 px-4 py-1.5 text-sm text-ink outline-none" />
         {TYPES.map((t) => (
           <button key={t} onClick={() => setType(t)} className={`focus-ring rounded-full px-3.5 py-1.5 text-sm capitalize ${type === t ? 'bg-ink text-cream' : 'bg-paper text-ink-soft ring-1 ring-line hover:text-ink'}`}>
             {t}

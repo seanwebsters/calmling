@@ -1,26 +1,29 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-cream: #fbf7ef;
-  --color-cream-2: #f4eee2;
-  --color-paper: #fffdf8;
-  --color-ink: #2e3644;
-  --color-ink-soft: #5d6574;
-  --color-mist: #8a909b;
-  --color-calm: #5b8db8;
-  --color-calm-deep: #3e6c94;
-  --color-calm-soft: #dce8f3;
-  --color-lavender: #a597cf;
-  --color-lavender-soft: #ece8f6;
-  --color-moss: #7ea67f;
-  --color-moss-soft: #e3eedf;
-  --color-peach: #e9a58a;
-  --color-line: #e7dfd0;
-  --font-display: var(--font-fraunces), Georgia, serif;
+  /* Dusky evening palette. Token names are semantic: "cream" = page, "paper" = surface, "ink" = text. */
+  --color-cream: #1f1833;
+  --color-cream-2: rgb(255 255 255 / 0.07);
+  --color-paper: rgb(52 41 82 / 0.72);
+  --color-ink: #f6f2ff;
+  --color-ink-soft: #cdc3e6;
+  --color-mist: #9d92ba;
+  --color-calm: #8b72f0;
+  --color-calm-deep: #d9cfff;
+  --color-calm-soft: rgb(139 114 240 / 0.22);
+  --color-lavender: #c2b2ff;
+  --color-lavender-soft: rgb(194 178 255 / 0.16);
+  --color-moss: #9ddcaa;
+  --color-moss-soft: rgb(157 220 170 / 0.15);
+  --color-peach: #ffb79a;
+  --color-danger: #ffb3a8;
+  --color-danger-soft: rgb(255 120 100 / 0.16);
+  --color-line: rgb(255 255 255 / 0.1);
+  --font-display: var(--font-nunito), ui-rounded, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, serif;
   --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-  --radius-xl2: 1.25rem;
-  --shadow-soft: 0 1px 2px rgb(46 54 68 / 0.04), 0 8px 24px -12px rgb(46 54 68 / 0.18);
-  --shadow-lift: 0 2px 4px rgb(46 54 68 / 0.05), 0 18px 40px -18px rgb(46 54 68 / 0.28);
+  --shadow-soft: 0 1px 0 rgb(255 255 255 / 0.06) inset, 0 10px 30px -14px rgb(8 4 20 / 0.7);
+  --shadow-lift: 0 1px 0 rgb(255 255 255 / 0.08) inset, 0 24px 60px -20px rgb(8 4 20 / 0.85);
 }
 
 html {
@@ -30,10 +33,40 @@ html {
 }
 body {
   font-family: var(--font-sans);
-  background: var(--color-cream);
+  background:
+    radial-gradient(60rem 40rem at 85% 110%, rgb(236 130 190 / 0.22), transparent 60%),
+    radial-gradient(50rem 36rem at 0% 0%, rgb(120 90 220 / 0.28), transparent 60%),
+    radial-gradient(40rem 30rem at 100% 10%, rgb(90 70 170 / 0.25), transparent 60%),
+    linear-gradient(180deg, #261d3f 0%, #1f1833 55%, #2a1c3a 100%);
+  background-attachment: fixed;
+}
+/* soft floating bokeh */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(9rem 9rem at 92% 78%, rgb(255 170 210 / 0.18), transparent 70%),
+    radial-gradient(6rem 6rem at 6% 88%, rgb(255 190 220 / 0.14), transparent 70%),
+    radial-gradient(5rem 5rem at 70% 96%, rgb(200 170 255 / 0.14), transparent 70%),
+    radial-gradient(7rem 7rem at 40% 4%, rgb(170 150 255 / 0.1), transparent 70%);
+}
+.glass {
+  background: rgb(58 45 92 / 0.55);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: var(--shadow-lift);
+}
+.chip {
+  background: rgb(255 255 255 / 0.88);
+  color: #2c2244;
+  backdrop-filter: blur(8px);
 }
 ::selection {
-  background: var(--color-lavender-soft);
+  background: rgb(139 114 240 / 0.45);
 }
 .font-display {
   font-family: var(--font-display);
@@ -42,12 +75,14 @@ body {
 .card {
   background: var(--color-paper);
   border: 1px solid var(--color-line);
-  border-radius: 1.25rem;
+  border-radius: 1.4rem;
   box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 .scroll-soft {
   scrollbar-width: thin;
-  scrollbar-color: #d9cfbd transparent;
+  scrollbar-color: rgb(255 255 255 / 0.18) transparent;
 }
 .focus-ring:focus-visible {
   outline: 2px solid var(--color-calm);
@@ -60,3 +95,6 @@ body {
 .live-dot {
   animation: livepulse 1.8s ease-in-out infinite;
 }
+
+select option { background: #2c2244; color: #f6f2ff; }
+input::placeholder, textarea::placeholder { color: var(--color-mist); }

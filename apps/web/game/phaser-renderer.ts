@@ -137,8 +137,9 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
       for (let i = 0; i < 140; i++) this.rainDrops.push({ x: Math.random() * W, y: Math.random() * H, v: 500 + Math.random() * 300 });
       if (manifest.character.placeholder) {
         this.add
-          .text(W - 14, H - 12, manifest.character.label, { fontFamily: 'DM Sans, sans-serif', fontSize: '15px', color: '#5d6574', backgroundColor: 'rgba(255,253,248,0.82)', padding: { x: 8, y: 4 } })
-          .setOrigin(1, 1)
+          .text(W / 2, H - 96, manifest.character.label, { fontFamily: 'DM Sans, sans-serif', fontSize: '15px', color: '#5d6574', backgroundColor: 'rgba(255,253,248,0.82)', padding: { x: 8, y: 4 } })
+          .setOrigin(0.5, 1)
+          .setAlpha(0.8)
           .setScrollFactor(0)
           .setDepth(100);
       }

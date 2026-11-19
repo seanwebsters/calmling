@@ -93,7 +93,7 @@ export function AuthDialog() {
               data-testid="username-input"
             />
             <p className="mt-2 text-xs text-mist">3–20 letters, numbers or underscores. Development sign-in: no email or password yet.</p>
-            {error && <p className="mt-3 rounded-lg bg-[#fbeae6] px-3 py-2 text-sm text-[#a2483a]">{error}</p>}
+            {error && <p className="mt-3 rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">{error}</p>}
             <Button type="submit" disabled={busy || name.trim().length < 3} className="mt-5 w-full" data-testid="join-button">
               {busy ? 'Joining…' : 'Join'}
             </Button>

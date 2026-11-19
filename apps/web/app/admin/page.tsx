@@ -119,7 +119,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             <Pill tone={d.brain.mode === 'llm' ? 'calm' : 'lavender'}>{d.brain.label}</Pill>
             <p className="mt-2 text-xs text-ink-soft">{d.brain.reason}</p>
             <p className="mt-2 text-sm text-ink-soft">Calls last hour: {d.brain.callsLastHour} · Spent today: ${Number(d.brain.spentTodayUsd).toFixed(4)}</p>
-            {d.brain.lastError && <p className="mt-1 text-xs text-[#a2483a]">Last error: {d.brain.lastError}</p>}
+            {d.brain.lastError && <p className="mt-1 text-xs text-danger">Last error: {d.brain.lastError}</p>}
             {d.spend.map((s: any, i: number) => (
               <p key={i} className="text-xs text-mist">{s.model}/{s.purpose}: {s.calls} calls, {s.failures} failed, ${Number(s.cost_usd ?? 0).toFixed(4)}</p>
             ))}
@@ -164,7 +164,7 @@ function Decisions({ tick }: { tick: number }) {
               <Pill tone={x.source === 'llm' ? 'calm' : x.source === 'fallback' ? 'lavender' : 'neutral'}>{x.source}{x.model ? ` · ${x.model}` : ''}</Pill>
               <strong className="text-ink">{ACTIONS[x.action]?.label ?? x.action}</strong>
               {x.target_id && <span className="text-ink-soft">→ {x.target_id}</span>}
-              {!x.valid && <Pill className="bg-[#fbeae6] text-[#a2483a]">rejected: {x.rejection_reason}</Pill>}
+              {!x.valid && <Pill className="bg-danger-soft text-danger">rejected: {x.rejection_reason}</Pill>}
             </div>
             <p className="mt-1 text-ink-soft">{x.reason}</p>
             {x.thought && <p className="mt-1 italic text-ink-soft">“{x.thought}”</p>}
@@ -250,7 +250,7 @@ function WorldTab({ act }: { act: (p: string, b?: unknown, l?: string) => Promis
             <span className="text-ink">{o.name}</span>
             <span className="text-xs text-mist">{o.id} · {o.location} · {o.origin.type}{o.origin.by ? ` from ${o.origin.by}` : ''} · used {o.interactions}×</span>
             {!o.permanent && o.origin.type !== 'world' && (
-              <button onClick={async () => { await act(`/api/admin/objects/${o.id}/remove`, {}, 'Removed'); load(); }} className="ml-auto text-xs text-[#a2483a] hover:underline">remove</button>
+              <button onClick={async () => { await act(`/api/admin/objects/${o.id}/remove`, {}, 'Removed'); load(); }} className="ml-auto text-xs text-danger hover:underline">remove</button>
             )}
           </li>
         ))}
@@ -268,10 +268,10 @@ function ChatTab({ act, tick }: { act: (p: string, b?: unknown, l?: string) => P
           <li key={m.id} className={`flex flex-wrap items-center gap-2 rounded-xl px-3 py-2 ${m.hidden ? 'bg-cream-2 opacity-60' : 'bg-cream/70'}`}>
             <strong>{m.username}</strong>
             <span className="flex-1 text-ink">{m.text}</span>
-            {Number(m.reports) > 0 && <Pill className="bg-[#fbeae6] text-[#a2483a]">{m.reports} reports</Pill>}
+            {Number(m.reports) > 0 && <Pill className="bg-danger-soft text-danger">{m.reports} reports</Pill>}
             {(typeof m.flags === 'string' ? JSON.parse(m.flags) : m.flags).map((f: string) => <Pill key={f}>{f}</Pill>)}
             <button className="text-xs text-calm-deep hover:underline" onClick={async () => { await act(`/api/admin/chat/${m.id}/hide`, { hidden: !m.hidden }, m.hidden ? 'Unhidden' : 'Hidden'); load(); }}>{m.hidden ? 'unhide' : 'hide'}</button>
-            <button className="text-xs text-[#a2483a] hover:underline" onClick={() => act(`/api/admin/users/${m.user_id}/mute`, { minutes: 60 }, 'Muted for 1 hour')}>mute 1h</button>
+            <button className="text-xs text-danger hover:underline" onClick={() => act(`/api/admin/users/${m.user_id}/mute`, { minutes: 60 }, 'Muted for 1 hour')}>mute 1h</button>
           </li>
         ))}
       </ul>
@@ -320,8 +320,8 @@ function HighlightsTab({ act, tick }: { act: (p: string, b?: unknown, l?: string
             <span className="flex-1">{h.description}</span>
             <span className="text-xs text-mist">D{h.day} · {h.score}</span>
             <Pill>{h.status}</Pill>
-            <button className="text-xs text-[#4f7a51] hover:underline" onClick={async () => { await act(`/api/admin/highlights/${h.id}/status`, { status: 'approved' }, 'Approved'); load(); }}>approve</button>
-            <button className="text-xs text-[#a2483a] hover:underline" onClick={async () => { await act(`/api/admin/highlights/${h.id}/status`, { status: 'rejected' }, 'Rejected'); load(); }}>reject</button>
+            <button className="text-xs text-moss hover:underline" onClick={async () => { await act(`/api/admin/highlights/${h.id}/status`, { status: 'approved' }, 'Approved'); load(); }}>approve</button>
+            <button className="text-xs text-danger hover:underline" onClick={async () => { await act(`/api/admin/highlights/${h.id}/status`, { status: 'rejected' }, 'Rejected'); load(); }}>reject</button>
           </li>
         ))}
       </ul>

@@ -2,7 +2,8 @@
 
 import { ACTIONS, LOCATIONS, NEED_KEYS, locationAt, type ChatMessageDTO, type SimEvent } from '@calmling/core';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BookOpen, Brain, Flag, Gift, Heart, MessageCircle, Send, Sparkles, Sprout, Target, Users, VolumeX } from 'lucide-react';
+import { BookOpen, Brain, Cloud, CloudRain, Eye, Flag, Gift, Heart, Maximize, MessageCircle, Moon, Send, Sparkles, Sprout, Sun, Target, VolumeX, Wind } from 'lucide-react';
+import { Avatar } from './Nav';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, session } from '@/lib/api';
@@ -54,7 +55,7 @@ export function activityLabel(action: string | undefined, toX?: number, targetNa
 
 const WEATHER: Record<string, string> = { clear: 'Clear', cloudy: 'Cloudy', rain: 'Rain', breezy: 'Breezy' };
 
-export function StatusOverlay() {
+export function StatusOverlay({ stageRef }: { stageRef?: React.RefObject<HTMLDivElement | null> }) {
   const frame = useLive((s) => s.frame);
   const conn = useLive((s) => s.conn);
   const viewers = useLive((s) => s.viewers);
@@ -62,43 +63,64 @@ export function StatusOverlay() {
   if (!frame) return null;
   const a = frame.character.activity;
   const label = activityLabel(a?.action, a?.toX, a?.targetId ? objects[a.targetId]?.name : null);
+  const where = a?.action === 'walk' ? '' : ` in the ${LOCATIONS[frame.character.location].name.toLowerCase()}`;
+  const [hh, mm] = frame.timeOfDay.split(':').map(Number);
+  const clock = `${((hh + 11) % 12) + 1}:${String(mm).padStart(2, '0')} ${hh < 12 ? 'AM' : 'PM'}`;
+  const night = frame.phase === 'night';
+  const WIcon = frame.weather === 'rain' ? CloudRain : frame.weather === 'cloudy' ? Cloud : frame.weather === 'breezy' ? Wind : night ? Moon : Sun;
+  const weatherLabel = frame.weather === 'clear' ? (night ? 'Clear' : 'Sunny') : WEATHER[frame.weather];
+  const fullscreen = () => {
+    const el = stageRef?.current;
+    if (!el) return;
+    if (document.fullscreenElement) void document.exitFullscreen();
+    else void el.requestFullscreen?.();
+  };
   return (
-    <div className="pointer-events-none absolute inset-x-3 top-3 flex flex-wrap items-start justify-between gap-2 sm:inset-x-4 sm:top-4" data-testid="status-overlay">
-      <div className="flex flex-wrap items-center gap-2">
-        {conn === 'live' ? (
-          <Pill tone="live" className="pointer-events-auto shadow-sm">
-            <span className="live-dot size-1.5 rounded-full bg-white" /> LIVE
-          </Pill>
-        ) : (
-          <button onClick={reconnectNow} className="pointer-events-auto">
-            <Pill className="bg-paper/95 shadow-sm">{conn === 'offline' ? 'Offline — tap to retry' : 'Reconnecting…'}</Pill>
+    <>
+      <div className="pointer-events-none absolute inset-x-3 top-3 flex flex-wrap items-start justify-between gap-2 sm:inset-x-5 sm:top-5" data-testid="status-overlay">
+        <div className="flex items-center gap-2">
+          {conn === 'live' ? (
+            <span className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-[#ef4b5f] px-3.5 py-1.5 text-sm font-bold tracking-wide text-white shadow-lg">
+              <span className="live-dot size-2 rounded-full bg-white/90" /> LIVE
+            </span>
+          ) : (
+            <button onClick={reconnectNow} className="pointer-events-auto chip rounded-full px-3 py-1.5 text-sm font-semibold">
+              {conn === 'offline' ? 'Offline — tap to retry' : 'Reconnecting…'}
+            </button>
+          )}
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-black/25 px-3 py-1.5 text-sm font-semibold text-white backdrop-blur-md">
+            <Eye size={16} /> {viewers.toLocaleString()} watching
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
+          <span className="chip rounded-full px-3.5 py-1.5 shadow" data-testid="day-number">Day {frame.day}</span>
+          <span className="chip inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 tabular-nums shadow">
+            {night ? <Moon size={15} /> : <Sun size={15} />} {clock}
+          </span>
+          <span className="chip hidden items-center gap-1.5 rounded-full px-3.5 py-1.5 shadow sm:inline-flex">
+            <WIcon size={15} /> {weatherLabel}
+          </span>
+          {frame.paused && <span className="chip rounded-full px-3 py-1.5">Paused by admin</span>}
+        </div>
+      </div>
+      <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-3 sm:inset-x-5 sm:bottom-5">
+        <span className="inline-flex max-w-[85%] items-center gap-2 rounded-full bg-black/35 px-4 py-2 text-[0.95rem] font-semibold text-white backdrop-blur-md" data-testid="current-activity">
+          <span className="size-2.5 shrink-0 rounded-full bg-[#ef4b5f]" />
+          <span className="truncate">Calmling is {label}{where} · <span className="font-normal capitalize text-white/80">{frame.character.mood}</span></span>
+        </span>
+        {stageRef && (
+          <button onClick={fullscreen} className="pointer-events-auto grid size-10 place-items-center rounded-full bg-black/30 text-white backdrop-blur-md hover:bg-black/45" aria-label="Full screen">
+            <Maximize size={18} />
           </button>
         )}
-        <span className="rounded-full bg-paper/90 px-3 py-1 text-sm text-ink shadow-sm backdrop-blur" data-testid="current-activity">
-          Calmling is <strong className="font-semibold">{label}</strong>
-        </span>
       </div>
-      <div className="flex flex-wrap items-center gap-1.5 text-xs">
-        <span className="rounded-full bg-paper/90 px-2.5 py-1 font-medium text-ink shadow-sm" data-testid="day-number">
-          Day {frame.day}
-        </span>
-        <span className="rounded-full bg-paper/90 px-2.5 py-1 tabular-nums text-ink shadow-sm">{frame.timeOfDay}</span>
-        <span className="rounded-full bg-paper/90 px-2.5 py-1 capitalize text-ink shadow-sm">{frame.character.mood}</span>
-        <span className="hidden rounded-full bg-paper/90 px-2.5 py-1 text-ink shadow-sm sm:inline">{WEATHER[frame.weather]}</span>
-        {viewers > 0 && (
-          <span className="hidden items-center gap-1 rounded-full bg-paper/90 px-2.5 py-1 text-ink shadow-sm sm:inline-flex">
-            <Users size={12} /> {viewers}
-          </span>
-        )}
-        {frame.paused && <Pill tone="lavender">Paused by admin</Pill>}
-      </div>
-    </div>
+    </>
   );
 }
 
 const REACTIONS = ['💛', '😊', '🌱', '😮', '😂'] as const;
 
-export function ChatPanel({ className = '' }: { className?: string }) {
+export function ChatPanel({ className = '', header = true }: { className?: string; header?: boolean }) {
   const chat = useLive((s) => s.chat);
   const user = useUser();
   const [text, setText] = useState('');
@@ -168,12 +190,14 @@ export function ChatPanel({ className = '' }: { className?: string }) {
   const visible = chat.filter((m) => !m.hidden && !muted.includes(m.userId));
   return (
     <div className={`flex min-h-0 flex-col ${className}`} data-testid="chat-panel">
-      <div className="flex items-center justify-between border-b border-line px-4 py-3">
-        <h2 className="flex items-center gap-2 font-display text-lg">
-          <MessageCircle size={17} className="text-calm" /> Live chat
-        </h2>
-        <span className="text-xs text-mist">Calmling may notice. It won't obey.</span>
-      </div>
+      {header && (
+        <div className="flex items-center justify-between border-b border-line px-4 py-3">
+          <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+            <MessageCircle size={17} className="text-calm" /> Live chat
+          </h2>
+          <span className="text-xs text-mist">Calmling may notice. It won't obey.</span>
+        </div>
+      )}
       <div
         ref={list}
         onScroll={(e) => {
@@ -184,10 +208,13 @@ export function ChatPanel({ className = '' }: { className?: string }) {
       >
         {!visible.length && <p className="py-8 text-center text-sm text-mist">No messages yet. Say hello.</p>}
         {visible.map((m) => (
-          <div key={m.id} className="group relative text-sm leading-snug" data-testid="chat-message">
-            <span className="font-semibold text-calm-deep">{m.username}</span>{' '}
-            <span className="text-[0.7rem] text-mist">{new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-            <p className="break-words text-ink">{m.text}</p>
+          <div key={m.id} className="group relative flex gap-3 text-[0.93rem] leading-snug" data-testid="chat-message">
+            <Avatar name={m.username} size={34} />
+            <div className="min-w-0 flex-1 pt-1.5">
+            <p className="break-words text-ink" title={new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}>
+              <span className="mr-2 font-bold text-white">{m.username}</span>
+              {m.text}
+            </p>
             <div className="mt-1 flex flex-wrap items-center gap-1">
               {Object.entries(m.reactions).map(([e, n]) => (
                 <button key={e} onClick={() => react(m.id, e)} className="rounded-full bg-cream-2 px-1.5 text-xs">
@@ -207,8 +234,9 @@ export function ChatPanel({ className = '' }: { className?: string }) {
                 )}
               </div>
             </div>
+            </div>
             {menu === m.id && (
-              <div className="absolute right-0 top-0 z-10 flex gap-1 rounded-xl border border-line bg-paper p-1 text-xs shadow-[var(--shadow-lift)]">
+              <div className="absolute right-0 top-0 z-10 flex gap-1 rounded-xl border border-line bg-[#2c2244] p-1 text-xs shadow-[var(--shadow-lift)]">
                 <button onClick={() => report(m.id)} className="flex items-center gap-1 rounded-lg px-2 py-1 hover:bg-cream-2">
                   <Flag size={12} /> Report
                 </button>
@@ -223,19 +251,19 @@ export function ChatPanel({ className = '' }: { className?: string }) {
           </div>
         ))}
       </div>
-      <form onSubmit={send} className="border-t border-line p-3">
-        {error && <p className="mb-2 text-xs text-[#a2483a]">{error}</p>}
-        <div className="flex items-center gap-2 rounded-full border border-line bg-cream px-2 py-1">
+      <form onSubmit={send} className="p-3">
+        {error && <p className="mb-2 text-xs text-danger">{error}</p>}
+        <div className="flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-2 py-1.5">
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
             maxLength={280}
-            placeholder={user ? 'Say something kind…' : 'Join to chat'}
-            className="min-w-0 flex-1 bg-transparent px-2 py-1.5 text-sm outline-none"
+            placeholder={user ? 'Send a message…' : 'Join to chat'}
+            className="min-w-0 flex-1 bg-transparent px-3 py-1.5 text-[0.95rem] text-white outline-none"
             data-testid="chat-input"
           />
-          <button type="submit" className="focus-ring grid size-8 place-items-center rounded-full bg-calm text-white disabled:opacity-40" disabled={!text.trim()} aria-label="Send">
-            <Send size={14} />
+          <button type="submit" className="focus-ring grid size-9 place-items-center rounded-full text-lavender hover:bg-white/10 disabled:opacity-50" disabled={!text.trim()} aria-label="Send">
+            <Send size={20} />
           </button>
         </div>
       </form>
@@ -308,7 +336,7 @@ export function GiftPanel({ compact = false }: { compact?: boolean }) {
       </div>
       <AnimatePresence>
         {status && (
-          <motion.p initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`mt-3 rounded-xl px-3 py-2 text-sm ${status.tone === 'ok' ? 'bg-moss-soft text-[#3f6b42]' : 'bg-[#fbeae6] text-[#a2483a]'}`} data-testid="gift-status">
+          <motion.p initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`mt-3 rounded-xl px-3 py-2 text-sm ${status.tone === 'ok' ? 'bg-moss-soft text-moss' : 'bg-danger-soft text-danger'}`} data-testid="gift-status">
             {status.tone === 'err'
               ? status.text
               : discovered
@@ -500,7 +528,7 @@ export function DiaryCard() {
       {e ? (
         <article>
           <h3 className="font-display text-lg">{e.title}</h3>
-          <p className="mt-2 font-display text-[0.98rem] italic leading-relaxed text-ink-soft">“{e.body}”</p>
+          <p className="mt-2 font-serif text-[0.98rem] italic leading-relaxed text-ink-soft">“{e.body}”</p>
           <p className="mt-3 text-xs text-mist">{e.generator === 'llm' ? 'AI-written' : 'Template-written'} narrative based on verified events.</p>
         </article>
       ) : (

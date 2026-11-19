@@ -90,6 +90,7 @@ export async function createApp(cfg: Config, opts: { db?: Db; startLoop?: boolea
     const { rowToEvent } = await import('./runtime');
     const hello: ServerMessage = { type: 'hello', serverTime: Date.now(), timeScale: rt.timeScale, tickMs: cfg.tickMs, frame: rt.fullFrame(), recentEvents: (recent.rows as Record<string, unknown>[]).map(rowToEvent).reverse() };
     ws.send(JSON.stringify(hello));
+    sendAll({ type: 'viewers', count: clients.size });
     let msgs = 0;
     const reset = setInterval(() => (msgs = 0), 10_000);
     ws.on('message', (raw) => {

@@ -8,7 +8,7 @@ export function Card({ title, icon, action, children, className = '' }: { title?
     <motion.section initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: 'easeOut' }} className={`card p-5 ${className}`}>
       {(title || action) && (
         <header className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 font-display text-[1.15rem] font-medium tracking-tight text-ink">
+          <h2 className="flex items-center gap-2 font-display text-[1.15rem] font-bold tracking-tight text-ink">
             {icon && <span className="text-calm">{icon}</span>}
             {title}
           </h2>
@@ -24,17 +24,17 @@ export function Pill({ children, tone = 'neutral', className = '' }: { children:
   const tones = {
     neutral: 'bg-cream-2 text-ink-soft',
     calm: 'bg-calm-soft text-calm-deep',
-    lavender: 'bg-lavender-soft text-[#6a5ba3]',
-    moss: 'bg-moss-soft text-[#4f7a51]',
-    live: 'bg-[#e8604c] text-white',
+    lavender: 'bg-lavender-soft text-lavender',
+    moss: 'bg-moss-soft text-moss',
+    live: 'bg-[#ef4b5f] text-white',
   };
   return <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${tones[tone]} ${className}`}>{children}</span>;
 }
 
 export function Button({ children, onClick, disabled, variant = 'primary', type = 'button', className = '', ...rest }: { children: ReactNode; onClick?: () => void; disabled?: boolean; variant?: 'primary' | 'soft' | 'ghost'; type?: 'button' | 'submit'; className?: string; 'data-testid'?: string }) {
   const v = {
-    primary: 'bg-calm text-white hover:bg-calm-deep shadow-[0_6px_16px_-8px_rgb(62_108_148/0.7)]',
-    soft: 'bg-calm-soft text-calm-deep hover:bg-[#cfdfee]',
+    primary: 'bg-gradient-to-r from-[#8b72f0] to-[#b07ae8] text-white hover:brightness-110 shadow-[0_8px_22px_-10px_rgb(139_114_240/0.9)]',
+    soft: 'bg-calm-soft text-calm-deep hover:bg-calm-soft/80',
     ghost: 'text-ink-soft hover:bg-cream-2',
   };
   return (
@@ -48,7 +48,7 @@ export function PageHeader({ eyebrow, title, children }: { eyebrow?: string; tit
   return (
     <div className="mb-8 max-w-2xl">
       {eyebrow && <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-lavender">{eyebrow}</p>}
-      <h1 className="font-display text-4xl font-medium tracking-tight text-ink sm:text-5xl">{title}</h1>
+      <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">{title}</h1>
       {children && <div className="mt-3 text-[1.02rem] leading-relaxed text-ink-soft">{children}</div>}
     </div>
   );
@@ -58,7 +58,7 @@ export function Empty({ children }: { children: ReactNode }) {
   return <p className="rounded-2xl bg-cream-2/70 px-4 py-6 text-center text-sm text-ink-soft">{children}</p>;
 }
 
-export function Meter({ value, color = '#5b8db8', label }: { value: number; color?: string; label: string }) {
+export function Meter({ value, color = '#8b72f0', label }: { value: number; color?: string; label: string }) {
   return (
     <div>
       <div className="mb-1 flex justify-between text-xs text-ink-soft">

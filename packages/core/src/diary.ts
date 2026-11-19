@@ -44,6 +44,7 @@ export function composeDiaryTemplate(day: number, events: SimEvent[]): DiaryDraf
   const weather = events.filter((e) => e.type === 'weather_changed').map((e) => String(e.data.weather));
   lines.push(opener === 'Today was a' ? `Today was a ${weather.includes('rain') ? 'rainy' : 'gentle'} sort of day.` : opener);
 
+  let habitsToday = 0;
   for (const e of events) {
     const d = e.data as Record<string, string>;
     switch (e.type) {
@@ -56,9 +57,13 @@ export function composeDiaryTemplate(day: number, events: SimEvent[]): DiaryDraf
       case 'first_time':
         lines.push(`For the very first time, I tried to ${ACTIONS[e.action ?? '']?.label ?? 'do something new'}. ${rng.pick(['I think I liked it.', 'It was harder than it looked.', 'I might do it again.'])}`);
         break;
-      case 'habit_formed':
-        lines.push(`I have noticed something about myself. ${d.label}. It just feels right now.`);
+      case 'habit_formed': {
+        habitsToday++;
+        if (habitsToday > 2) break;
+        const l = String(d.label).replace(/ \([^)]*\)$/, '').toLowerCase();
+        lines.push(habitsToday === 1 ? rng.pick([`I have noticed something about myself: I ${l.replace(/^(\w+)s\b/, '$1')}. It just feels right now.`, `It seems I have a little routine now. I ${l.replace(/^(\w+)s\b/, '$1')}.`]) : `And another thing — apparently I ${l.replace(/^(\w+)s\b/, '$1')}, too.`);
         break;
+      }
       case 'habit_faded':
         lines.push(`I haven't been ${String(d.gerund ?? 'doing that')} much lately. Funny how things change.`);
         break;

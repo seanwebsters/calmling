@@ -33,6 +33,7 @@ test('multiple browsers observe the same shared state', async ({ browser }) => {
 test('a viewer can send a flower and it appears in the world', async ({ page, request }) => {
   await page.goto('/');
   await join(page, `flower_fan_${Date.now() % 100000}`);
+  await page.getByTestId('tab-gifts').click();
   await page.getByTestId('gift-grid').first().getByTestId('gift-flower').click();
   await page.getByTestId('send-gift').first().click();
   await expect(page.getByTestId('gift-status').first()).toContainText(/Your gift is in the world|noticed/, { timeout: 20_000 });

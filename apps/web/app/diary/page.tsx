@@ -20,7 +20,7 @@ export default function DiaryPage() {
             <div className="p-6 sm:p-8">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-lavender">Day {e.day}</p>
               <h2 className="mt-1 font-display text-2xl">{e.title}</h2>
-              <p className="mt-4 font-display text-[1.12rem] leading-[1.75] text-ink">{e.body}</p>
+              <p className="mt-4 font-serif text-[1.12rem] leading-[1.75] text-ink">{e.body}</p>
               <p className="mt-4 flex items-center gap-1.5 text-xs text-mist">
                 <Feather size={13} /> {e.generator === 'llm' ? `AI-generated narrative (${e.model})` : 'Template narrative (no LLM configured)'} — interpretation, not a record.
               </p>
