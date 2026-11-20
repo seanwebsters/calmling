@@ -10,6 +10,11 @@ export function LiveScene({ className = '' }: { className?: string }) {
   const host = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState<string | null>(null);
   const hasFrame = useLive((s) => !!s.frame);
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setSlow(true), 8000);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     let renderer: CalmlingRenderer | null = null;
@@ -38,13 +43,14 @@ export function LiveScene({ className = '' }: { className?: string }) {
   }, []);
 
   return (
-    <div className={`relative overflow-hidden bg-[#f6efe0] ${className}`}>
+    <div className={`relative overflow-hidden bg-[#2a2140] ${className}`}>
       <div ref={host} className="absolute inset-0 [&_canvas]:!h-full [&_canvas]:!w-full [&_canvas]:object-cover" data-testid="live-scene" />
       {!hasFrame && !failed && (
         <div className="absolute inset-0 grid place-items-center text-ink-soft">
           <div className="flex flex-col items-center gap-3">
             <div className="size-10 animate-spin rounded-full border-2 border-calm/30 border-t-calm" />
             <p className="text-sm">Finding Calmling…</p>
+            {slow && <p className="max-w-xs text-center text-xs text-ink-soft/80">Calmling&apos;s island can&apos;t be reached right now. The simulation service may not be running yet.</p>}
           </div>
         </div>
       )}
