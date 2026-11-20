@@ -371,7 +371,8 @@ function makeScene(Phaser: PhaserNS, manifest: AssetManifest, read: () => Render
       const draw = (k: string) => drawProp(this, g, k);
       if (kind) draw(kind);
       else if (held) {
-        const c = this.add.container(0, -112);
+        // held in front of the body, at hand height
+        const c = this.add.container(this.parts.image ? 34 : 0, this.parts.image ? -30 : -112);
         drawObjectInto(this, c, held, true);
         this.prop.add(c);
       }
